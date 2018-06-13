@@ -61,8 +61,25 @@ You can find the inputs to the particle filter in the `data` directory.
 2. y position
 3. landmark id
 
-### All other data the simulator provides, such as observations and controls.
 
-> * Map data provided by 3D Mapping Solutions GmbH.
+[//]: # (Image References)
 
+[image1]: ./image/example_image1.png "simulater"
+[image2]: ./image/Particle_filter_process.png "Process overview"
+</br>
 
+## Process Overview
+The image below shows a roadmap to successfully implement a particle filter algorithm.
+![alt text][image2]
+
+1. Initialization
+2. Prediction
+3. Update
+4. Resample
+
+## Result
+The image below is an image of the simulator.
+![alt text][image1]
+
+## Video
+Here's a [link to my video result](https://youtu.be/oTlmd7SwpMY)
