@@ -1,15 +1,8 @@
-/*
- * particle_filter.cpp
- *
- *  Created on: Dec 12, 2016
- *      Author: Tiffany Huang
- */
-
 #include <random>
 #include <algorithm>
 #include <iostream>
 #include <numeric>
-#include <math.h> 
+#include <math.h>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -28,7 +21,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   // NOTE: Consult particle_filter.h for more information about this method (and others in this file).
   
   //Number of particles
-  num_particles = 100;
+  num_particles = 20;
   weights.resize(num_particles);
   
   // This line creates a normal (Gaussian) distribution for x, y and theta
@@ -89,20 +82,21 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::ve
     double minDist = numeric_limits<double>::max();
     int mapId = -1;
     for(unsigned j = 0; j < nPred; j++ ) { // For each predition.
-      double distance = dist(observations[i].x, predicted[j].x, observations[i].y, predicted[j].y);
-//      cout << "distance[" << i <<"]["<<j<<"]: "<<distance<<endl;
+      double distance = dist(observations[i].x, observations[i].y, predicted[j].x, predicted[j].y);
+      //        cout << "distance[" << i <<"]["<<j<<"]: "<<distance<<endl;
       if(distance < minDist) {
         minDist = distance;
         mapId = predicted[j].id;
-//        cout << "minDist: "<<minDist << endl;
-//        cout << "mapID: "<<mapId << endl;
+        //        cout << "minDist: "<<minDist << endl;
+        //        cout << "mapID: "<<mapId << endl;
       }
     }
+    //    cout << "mapID: "<<mapId << endl;
     observations[i].id = mapId;
   }
 }
 
-void ParticleFilter::updateWeights(double sensor_range, double std_landmark[], 
+void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
                                    const std::vector<LandmarkObs> &observations, const Map &map_landmarks) {
   //   You can read more about this distribution here:
   //   https://en.wikipedia.org/wiki/Multivariate_normal_distribution
@@ -159,8 +153,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
       int landmark_id = map_landmarks.landmark_list[j].id_i;
       
       // only consider landmarks within the sensor range of the particle
-        if(dist(particle_x, particle_y, landmark_x, landmark_y) <= sensor_range){
-          predictions.push_back(LandmarkObs{landmark_id, landmark_x, landmark_y});
+      if(dist(particle_x, particle_y, landmark_x, landmark_y) <= sensor_range){
+        predictions.push_back(LandmarkObs{landmark_id, landmark_x, landmark_y});
       }
     }
     
@@ -170,19 +164,16 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     particles[i].weight = 1.0;
     // find actual x and y coordinates for each observed landmark
     for(int j = 0; j < map_obs.size() ; j++){
-      
+      LandmarkObs predicted;
       // find corresponding predicted landmark for current particle
-//      double predict_x = 0;
-//      double predict_y = 0;
-//      for(int k = 0; k < predictions.size(); k++){
-//        if(predictions[k].id == observations[j].id){
-//          predict_x = predictions[k].x;
-//          predict_y = predictions[k].y;
-//          break;
-//        }
-//      }
       auto obs = map_obs[j];
-      auto predicted = predictions[obs.id];
+      for(int k = 0; k < predictions.size() ; k++){
+        if(obs.id == predictions[k].id){
+          predicted = predictions[k];
+          break;
+        }
+      }
+      //      auto predicted = predictions[obs.id];
       
       auto dx = obs.x - predicted.x;
       auto dy = obs.y - predicted.y;
@@ -191,19 +182,15 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
       
       // calculate weight using normalization terms and exponent
       double weight = gauss_norm * exp(-exponent);
-//      if(weight < 0.01){
-//        weight = 0.01;
-//      }
+      //      if(weight < 0.01){
+      //        weight = 0.01;
+      //      }
       
       // landmark measurements are independent
       particles[i].weight *= weight;
-//      weights[i] = particles[i].weight;
-      particles[i].associations.push_back(observations[j].id);
-      particles[i].sense_x.push_back(observations[j].x);
-      particles[i].sense_y.push_back(observations[j].y);
     }
     weights[i] = particles[i].weight;
-    cout << "i: "<< i << " weight: " << weights[i] << endl;
+//    cout << "i: "<< i << " weight: " << weights[i] << endl;
   }
 }
 
@@ -218,8 +205,10 @@ void ParticleFilter::resample() {
   double beta = 0.0;
   double max_weight = *max_element(weights.begin(), weights.end());
   
+  uniform_real_distribution<double> distDouble(0.0, max_weight);
+  
   for(int i = 0; i < num_particles; i++){
-    beta += random() * 2.0 * max_weight;
+    beta += distDouble(gen) * 2.0;
     while(beta > weights[index]){
       beta -= weights[index];
       index = (index + 1) % num_particles;
@@ -230,12 +219,12 @@ void ParticleFilter::resample() {
   
 }
 
-Particle ParticleFilter::SetAssociations(Particle& particle, const std::vector<int>& associations, 
+Particle ParticleFilter::SetAssociations(Particle& particle, const std::vector<int>& associations,
                                          const std::vector<double>& sense_x, const std::vector<double>& sense_y)
 {
   //particle: the particle to assign each listed association, and association's (x,y) world coordinates mapping to
   // associations: The landmark id that goes along with each listed association
-  // sense_x: the associations x mapping already converted to world coordinates
+  // sense_x: the ass   ociations x mapping already converted to world coordinates
   // sense_y: the associations y mapping already converted to world coordinates
   
   particle.associations= associations;
