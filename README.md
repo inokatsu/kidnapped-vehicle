@@ -1,6 +1,11 @@
 # Localization with Particle Filters - Finding a Kidnapped Vehicle
 
+[//]: # (Image References)
 
+[image1]: ./image/result_movie.mov.gif "Result"
+[image2]: ./image/Particle_filter_process.png "Process overview"
+
+![alt text][image1]
 
 
 ## Project Introduction
@@ -62,12 +67,6 @@ You can find the inputs to the particle filter in the `data` directory.
 3. landmark id
 
 
-[//]: # (Image References)
-
-[image1]: ./image/example_image1.png "simulater"
-[image2]: ./image/Particle_filter_process.png "Process overview"
-</br>
-
 ## Process Overview
 The image below shows a roadmap to successfully implement a particle filter algorithm.
 ![alt text][image2]
@@ -78,8 +77,4 @@ The image below shows a roadmap to successfully implement a particle filter algo
 4. Resample
 
 ## Result
-The image below is an image of the simulator.
-![alt text][image1]
-
-## Video
 Here's a [link to my video result](https://youtu.be/oTlmd7SwpMY)
